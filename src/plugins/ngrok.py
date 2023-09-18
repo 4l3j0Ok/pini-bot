@@ -12,9 +12,10 @@ async def get_public_url():
         tunnels = response.json().get("tunnels", {})
         for tunnel in tunnels:
             if tunnel.get("name") == config.NGROK_TUNNEL_NAME:
-                url = tunnel.get("public_url")
-                logger.info("URL publica de Ngrok obtenida.")
-        return url
+                if tunnel.get("public_url"):
+                    logger.info("URL publica de Ngrok obtenida.")
+                    return tunnel.get("public_url")
+        return None
     except Exception as ex:
         logger.exception(ex)
         raise ex
