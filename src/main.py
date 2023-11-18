@@ -28,7 +28,7 @@ class Client(discord.Client):
         channel = self.get_channel(config.LOGGER_CHANNEL_ID) \
             if not config.TESTING else self.get_channel(config.ADMIN_CHANNEL_ID)
         result = await ngrok.get_public_url()
-        if result != self.previous_url:
+        if result and result != self.previous_url:
             logger.info("La URL obtenida es diferente de la anterior, mandando mensaje.")
             result_str = config.MSG_URL_CHANGED.format(url=result)
             await channel.send(result_str)

@@ -18,4 +18,4 @@ async def get_public_url():
         return None
     except Exception as ex:
         logger.exception(ex)
-        raise ex
+        return None
