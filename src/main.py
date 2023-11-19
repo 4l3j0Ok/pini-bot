@@ -41,7 +41,7 @@ class Client(discord.Client):
     async def send_weekly_challenge(self):
         today = datetime.today()
         admin_channel = self.get_channel(config.ADMIN_CHANNEL_ID)
-        channel = self.get_channel(config.CHALLENGES_CHANNEL_ID) \
+        channel = self.get_channel(config.WEEKLY_CHALLENGES_CHANNEL_ID) \
             if not config.TESTING else self.get_channel(config.ADMIN_CHANNEL_ID)
         challenge = await challenges.get_weekly_challenge()
         if not challenge:
