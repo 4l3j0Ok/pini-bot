@@ -1,10 +1,10 @@
 import discord
-from discord.ext import commands, tasks
-import asyncio
+from discord.ext import tasks
 from datetime import datetime, timedelta
 from plugins import ngrok, challenges
 import config
 from logger import logger
+import time
 
 
 class Client(discord.Client):
@@ -23,7 +23,7 @@ class Client(discord.Client):
             self.send_weekly_challenge.start()
 
 
-    @tasks.loop(seconds = 60)
+    @tasks.loop(minutes = 15)
     async def ngrok_daemon(self):
         channel = self.get_channel(config.LOGGER_CHANNEL_ID) \
             if not config.TESTING else self.get_channel(config.ADMIN_CHANNEL_ID)
@@ -37,29 +37,28 @@ class Client(discord.Client):
         self.previous_url = result
 
 
-    @tasks.loop(seconds = 60)
+    @tasks.loop(minutes = 15)
     async def send_weekly_challenge(self):
-        now = datetime.now()
-        time_to_wait = timedelta(weeks=1)
+        today = datetime.today()
         admin_channel = self.get_channel(config.ADMIN_CHANNEL_ID)
         channel = self.get_channel(config.CHALLENGES_CHANNEL_ID) \
             if not config.TESTING else self.get_channel(config.ADMIN_CHANNEL_ID)
         challenge = await challenges.get_weekly_challenge()
         if not challenge:
-            logger.error("No hay retos semanales disponibles en la base de datos.")
+            logger.warning("No hay retos semanales disponibles en la base de datos.")
+            logger.warning("Avisando en el canal de administración.")
             await admin_channel.send(config.MSG_NO_CHALLENGES_AVAILABLE)
-        latest_message_date = challenges.get_latest_challenge_date()
-        if not latest_message_date:
+            return
+        if challenges.is_weekly_challenge_time(today):
+            logger.info("Enviando mensaje.")
+            await channel.send(f"¡Hoy es día de reto semanal! @everyone")
             await channel.send(challenge["content"])
-            await challenges.mark_challenge(challenge["_id"], sent_at=now)
-        else:
-            if now - latest_message_date > time_to_wait:
-                await channel.send(challenge["content"])
-                await challenges.mark_challenge(challenge["_id"], sent_at=now)
-            else:
-                logger.info("Todavía no ha pasado el tiempo necesario para mandar el reto semanal.")
-                logger.info(f"Quedan {time_to_wait - (now - latest_message_date)} para mandar el reto semanal.")
+            await challenges.mark_challenge(challenge["_id"], sent_at=today)
+        return
 
 
-client = Client(intents=discord.Intents.default())
-client.run(config.TOKEN)
+if __name__=="__main__":
+    time.tzset()
+    client = Client(intents=discord.Intents.default())
+    client.run(config.TOKEN)
+
