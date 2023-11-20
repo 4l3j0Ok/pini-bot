@@ -11,15 +11,15 @@ coll = client.pini_bot.challenges
 
 async def get_weekly_challenge() -> Union[dict, None]:
     if coll.count_documents({}) == 0:
-        save_initial_challenges()
+        logger.info("Guardando los retos iniciales.")
+        save_challenge(config.INITIAL_CHALLENGES_PATH)
     logger.info("Obteniendo reto semanal.")
     challenge = coll.find_one({"sent": False})
     return challenge
 
 
-def save_initial_challenges():
-    logger.info("Guardando los retos iniciales.")
-    with open(config.INITIAL_CHALLENGES_PATH, "r") as file:
+def save_challenge(md_path):
+    with open(md_path, "r") as file:
         content = file.read()
         challenges = [challenge for challenge in content.split("#") if challenge]
         data = []
