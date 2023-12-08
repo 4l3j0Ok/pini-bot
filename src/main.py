@@ -44,12 +44,12 @@ class Client(discord.Client):
         channel = self.get_channel(config.WEEKLY_CHALLENGES_CHANNEL_ID) \
             if not config.TESTING else self.get_channel(config.ADMIN_CHANNEL_ID)
         challenge = await challenges.get_weekly_challenge()
-        if not challenge:
-            logger.warning("No hay retos semanales disponibles en la base de datos.")
-            logger.warning("Avisando en el canal de administración.")
-            await admin_channel.send(config.MSG_NO_CHALLENGES_AVAILABLE)
-            return
         if challenges.is_weekly_challenge_time(today):
+            if not challenge:
+                logger.warning("No hay retos semanales disponibles en la base de datos.")
+                logger.warning("Avisando en el canal de administración.")
+                await admin_channel.send(config.MSG_NO_CHALLENGES_AVAILABLE)
+                return
             logger.info("Enviando mensaje.")
             await channel.send(f"¡Hoy es día de reto semanal! @everyone")
             await channel.send(challenge["content"])
