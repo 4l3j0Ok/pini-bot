@@ -4,8 +4,6 @@ services:
   pini-bot:
     image: alejoide/pini-bot:latest
     restart: unless-stopped
-    depends_on:
-      - backend
     env_file:
       - .env
     networks:
