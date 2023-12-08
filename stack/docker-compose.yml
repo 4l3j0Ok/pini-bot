@@ -4,6 +4,9 @@ services:
   pini-bot:
     image: alejoide/pini-bot:latest
     restart: unless-stopped
+    volumes:
+      - ./challenges/new:/app/challenges/new
+      - ./challenges/processed:/app/challenges/processed
     env_file:
       - .env
     networks:
