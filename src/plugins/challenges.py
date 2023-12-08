@@ -3,6 +3,8 @@ import config
 from datetime import datetime
 from logger import logger
 from typing import Union
+from glob import glob
+import shutil
 from bson.objectid import ObjectId
 
 
@@ -16,23 +18,6 @@ async def get_weekly_challenge() -> Union[dict, None]:
     logger.info("Obteniendo reto semanal.")
     challenge = coll.find_one({"sent": False})
     return challenge
-
-
-def save_challenge(md_path):
-    with open(md_path, "r") as file:
-        content = file.read()
-        challenges = [challenge for challenge in content.split("#") if challenge]
-        data = []
-        for challenge in challenges:
-            challenge = f"#{challenge}"
-            document = {
-                "content": challenge,
-                "sent": False,
-                "sent_at": None
-            }
-            data.append(document)
-        coll.insert_many(data)
-    return
 
 
 async def mark_challenge(challenge_id: ObjectId, sent_at: datetime = datetime.now()) -> None:
@@ -63,3 +48,34 @@ def is_weekly_challenge_time(today: datetime = datetime.today()) -> bool:
             return False
     logger.info("Hoy no es un día de reto semanal.")
     return False
+
+
+def fetch_challenges():
+    logger.info("Buscando nuevos retos semanales.")
+    challenges = glob(f"{config.FIND_CHALLENGES_PATH}/*.md")
+    if challenges:
+        total_challenges = len(challenges)
+        logger.info(f"Encontrados {total_challenges} retos semanales.")
+        for i, challenge in enumerate(challenges):
+            save_challenge(challenge)
+            logger.info(f"Procesados {i + 1} de {total_challenges} archivos.")
+            shutil.move(challenge, config.PROCESSED_CHALLENGES_PATH)
+        logger.info("Retos semanales actualizados.")
+    return
+
+
+def save_challenge(md_path):
+    with open(md_path, "r") as file:
+        content = file.read()
+        challenges = [challenge for challenge in content.split("#") if challenge]
+        data = []
+        for challenge in challenges:
+            challenge = f"#{challenge}"
+            document = {
+                "content": challenge,
+                "sent": False,
+                "sent_at": None
+            }
+            data.append(document)
+        coll.insert_many(data)
+    return

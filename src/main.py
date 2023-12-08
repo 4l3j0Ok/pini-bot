@@ -43,8 +43,9 @@ class Client(discord.Client):
         admin_channel = self.get_channel(config.ADMIN_CHANNEL_ID)
         channel = self.get_channel(config.WEEKLY_CHALLENGES_CHANNEL_ID) \
             if not config.TESTING else self.get_channel(config.ADMIN_CHANNEL_ID)
-        challenge = await challenges.get_weekly_challenge()
+        challenges.fetch_challenges()
         if challenges.is_weekly_challenge_time(today):
+            challenge = await challenges.get_weekly_challenge()
             if not challenge:
                 logger.warning("No hay retos semanales disponibles en la base de datos.")
                 logger.warning("Avisando en el canal de administración.")
