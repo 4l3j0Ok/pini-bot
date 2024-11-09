@@ -9,16 +9,11 @@ ENABLED_PLUGINS = os.environ.get("ENABLED_PLUGINS", "").split(",")
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 TESTING = os.environ.get("TESTING") == "True"
 
-# Ngrok Plugin
-NGROK_URL = os.getenv("NGROK_URL")
-NGROK_TUNNELS_PATH = "/api/tunnels"
-NGROK_TUNNEL_NAME = "menumaker"
-NGROK_APP_NAME = "Menu Maker"
-
-
 # Challenges plugin
 WEEKLY_CHALLENGES_CHANNEL_ID = int(os.environ.get("WEEKLY_CHALLENGES_CHANNEL_ID"))
-WEEKLY_CHALLENGE_DAYS = [int(day) for day in os.getenv("WEEKLY_CHALLENGE_DAYS", "0,1,2,3,4,5,6").split(",")]
+WEEKLY_CHALLENGE_DAYS = [
+    int(day) for day in os.getenv("WEEKLY_CHALLENGE_DAYS", "0,1,2,3,4,5,6").split(",")
+]
 WEEKLY_CHALLENGE_HOUR = int(os.getenv("WEEKLY_CHALLENGE_HOUR", "12"))
 FIND_CHALLENGES_PATH = "/app/challenges/new"
 PROCESSED_CHALLENGES_PATH = "/app/challenges/processed"
@@ -30,5 +25,4 @@ MONGO_PASS = os.getenv("MONGO_PASS")
 
 
 # Messages
-MSG_URL_CHANGED = f"## <:online:1155558498097168454>Aplicación reiniciada\nLa aplicación **{NGROK_APP_NAME}** está online otra vez .\nURL: " + "**{url}**"
-MSG_NO_CHALLENGES_AVAILABLE = f"## Falta de retos semanales\nNo hay retos semanales disponibles en la base de datos. Habría que cargar más... O meteme una integración con ChatGPT y me manejo solo!"
+MSG_NO_CHALLENGES_AVAILABLE = "## Falta de retos semanales\nNo hay retos semanales disponibles en la base de datos. Habría que cargar más... O meteme una integración con ChatGPT y me manejo solo!"
