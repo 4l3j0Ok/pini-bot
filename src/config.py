@@ -10,6 +10,9 @@ LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 TESTING = os.environ.get("TESTING") == "True"
 APP_PATH = os.path.dirname(os.path.abspath(__file__))
 
+# Commands
+PREFIX = os.environ.get("PREFIX", "!")
+
 # Challenges plugin
 WEEKLY_CHALLENGES_CHANNEL_ID = int(os.environ.get("WEEKLY_CHALLENGES_CHANNEL_ID"))
 WEEKLY_CHALLENGE_DAYS = [

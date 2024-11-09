@@ -46,7 +46,7 @@ class Bot(commands.Bot):
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = Bot(command_prefix="!", intents=intents)
+bot = Bot(command_prefix=config.PREFIX, intents=intents)
 cmds = Commands(bot)
 
 
