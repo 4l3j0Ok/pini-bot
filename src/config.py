@@ -5,6 +5,9 @@ import os
 TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 ADMIN_CHANNEL_ID = int(os.environ.get("ADMIN_CHANNEL_ID"))
 LOGGER_CHANNEL_ID = int(os.environ.get("LOGGER_CHANNEL_ID"))
+ADMIN_ROLES_IDS = [
+    int(role) for role in os.environ.get("ADMIN_ROLES_IDS", "").split(",")
+]
 ENABLED_PLUGINS = os.environ.get("ENABLED_PLUGINS", "").split(",")
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 TESTING = os.environ.get("TESTING") == "True"
