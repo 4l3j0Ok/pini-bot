@@ -1,16 +1,16 @@
 import discord
-from discord.ext import tasks
+from discord.ext import tasks, commands
 from datetime import datetime
 from plugins import challenges
+from cmds import Commands
 import config
 from logger import logger
 import time
 
 
-class Client(discord.Client):
+class Bot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.previous_url = None
 
     async def on_ready(self):
         logger.info(f" Logueado como {self.user} (ID: {self.user.id})")
@@ -44,7 +44,12 @@ class Client(discord.Client):
         return
 
 
+intents = discord.Intents.default()
+intents.message_content = True
+bot = Bot(command_prefix="!", intents=intents)
+cmds = Commands(bot)
+
+
 if __name__ == "__main__":
     time.tzset()
-    client = Client(intents=discord.Intents.default())
-    client.run(config.TOKEN)
+    bot.run(config.TOKEN)
