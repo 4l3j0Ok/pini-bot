@@ -22,6 +22,7 @@ WEEKLY_CHALLENGE_DAYS = [
     int(day) for day in os.getenv("WEEKLY_CHALLENGE_DAYS", "0,1,2,3,4,5,6").split(",")
 ]
 WEEKLY_CHALLENGE_HOUR = int(os.getenv("WEEKLY_CHALLENGE_HOUR", "12"))
+WEEKLY_CHALLENGE_INTERVAL = int(os.getenv("WEEKLY_CHALLENGE_INTERVAL", "1"))
 FIND_CHALLENGES_PATH = f"{APP_PATH}/../challenges/new"
 PROCESSED_CHALLENGES_PATH = f"{APP_PATH}/../challenges/processed"
 INITIAL_CHALLENGES_PATH = f"{APP_PATH}/plugins/challenges.md"

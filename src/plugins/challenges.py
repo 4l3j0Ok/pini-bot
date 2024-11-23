@@ -20,31 +20,56 @@ async def get_weekly_challenge() -> Union[dict, None]:
     return challenge
 
 
-async def mark_challenge(challenge_id: ObjectId, sent_at: datetime = datetime.now()) -> None:
+async def mark_challenge(
+    challenge_id: ObjectId, sent_at: datetime = datetime.now()
+) -> None:
     logger.info(f"Marcando reto semanal como enviado: {challenge_id}")
     coll.update_one({"_id": challenge_id}, {"$set": {"sent": True, "sent_at": sent_at}})
     return
 
 
 def get_latest_challenge_date() -> Union[datetime, None]:
-    challenge = coll.find_one({"sent": True}, sort=[('sent_at', -1)])
+    challenge = coll.find_one({"sent": True}, sort=[("sent_at", -1)])
     return challenge["sent_at"] if challenge else None
 
 
 def is_weekly_challenge_time(today: datetime = datetime.today()) -> bool:
     latest_challenge_date = get_latest_challenge_date()
+    days_passed = (
+        (today - latest_challenge_date).days if latest_challenge_date else None
+    )
+    interval = config.WEEKLY_CHALLENGE_INTERVAL
     logger.debug(f"Días de reto semanal: {config.WEEKLY_CHALLENGE_DAYS}")
-    logger.debug(f"Último mensaje de reto semanal: {latest_challenge_date}")
+    logger.info(
+        f"Fecha del último mensaje de reto semanal: {latest_challenge_date.date() if latest_challenge_date else None}"
+    )
+    logger.debug(f"Intervalo de reto semanal: {config.WEEKLY_CHALLENGE_INTERVAL}")
     if today.weekday() in config.WEEKLY_CHALLENGE_DAYS:
-        if not latest_challenge_date or latest_challenge_date.date() != today.date():
+        if not latest_challenge_date:
+            logger.info(
+                "Hoy es un día de reto semanal, y no se ha enviado un mensaje antes."
+            )
+            return True
+        if latest_challenge_date.date() != today.date():
+            if days_passed < interval:
+                logger.info(
+                    f"Hoy es un día de reto semanal, pero han pasado {days_passed} días desde el último mensaje. El intervalo es de {interval} días."
+                )
+                return False
             if today.hour >= config.WEEKLY_CHALLENGE_HOUR:
-                logger.info("Hoy es un día de reto semanal, y es la hora de enviar el mensaje.")
+                logger.info(
+                    "Hoy es un día de reto semanal, y es la hora de enviar el mensaje."
+                )
                 return True
             else:
-                logger.info("Hoy es un día de reto semanal, pero no es la hora de enviar el mensaje.")
+                logger.info(
+                    "Hoy es un día de reto semanal, pero no es la hora de enviar el mensaje."
+                )
                 return False
         else:
-            logger.info("Hoy es un día de reto semanal, pero ya se ha enviado el mensaje.")
+            logger.info(
+                "Hoy es un día de reto semanal, pero ya se ha enviado el mensaje."
+            )
             return False
     logger.info("Hoy no es un día de reto semanal.")
     return False
@@ -74,7 +99,7 @@ def save_challenge(md_path):
             document = {
                 "content": challenge,
                 "sent": False,
-                "sent_at": None
+                "sent_at": None,
             }
             data.append(document)
         coll.insert_many(data)

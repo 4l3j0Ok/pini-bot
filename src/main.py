@@ -18,7 +18,7 @@ class Bot(commands.Bot):
             logger.warning("PLUGIN DE CHALLENGES ACTIVO")
             self.send_weekly_challenge.start()
 
-    @tasks.loop(minutes=15)
+    @tasks.loop(hours=1)
     async def send_weekly_challenge(self):
         today = datetime.today()
         admin_channel = self.get_channel(config.ADMIN_CHANNEL_ID)
